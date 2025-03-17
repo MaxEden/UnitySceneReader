@@ -26,6 +26,10 @@ namespace UnitySceneReader
                     foreach (var prefabElement in prefabElements)
                     {
                         prefabElement.Depth = depth + 1;
+                        if (prefabElement is not PrefabInstanceElement && !prefabElement.stripped)
+                        {
+                            prefabElement.gameObject.transform.Parent = pel.TransformParent;
+                        }
                     }
 
                     pel.ParentPrefab = parentPrefab;
@@ -151,8 +155,11 @@ namespace UnitySceneReader
                 if (el is PrefabInstanceElement pel)
                 {
                     pel.SourcePrefabId = Reader.ReadGuid(el.props[new YamlScalarNode("m_SourcePrefab")]);
+                    
 
                     var modifications = el.props[new YamlScalarNode("m_Modification")];
+                    pel.TransformParentId = Reader.ReadFileId(modifications[new YamlScalarNode("m_TransformParent")]);
+
                     var modification = modifications[new YamlScalarNode("m_Modifications")];
 
                     foreach (var item in ((YamlSequenceNode)modification).Children)
@@ -213,6 +220,7 @@ namespace UnitySceneReader
                     else
                     {
                         //stripped
+                        tel.stripped = true;
                     }
 
 
@@ -220,6 +228,8 @@ namespace UnitySceneReader
 
                 if (el is GameObjectElement gel)
                 {
+                    gel.gameObject = gel;
+
                     if (gel.props.Children.TryGetValue(new YamlScalarNode("m_Component"), out var components))
                     {
                         gel.Components ??= new List<SceneElement>();
@@ -240,6 +250,7 @@ namespace UnitySceneReader
                     else
                     {
                         //stripped
+                        gel.stripped = true;
                     }
                 }
 
@@ -256,6 +267,11 @@ namespace UnitySceneReader
                     if (meta.idToPrefab.TryGetValue(pel.SourcePrefabId, out var prefab))
                     {
                         pel.prefab = prefab;
+                    }
+
+                    if (idToEl.TryGetValue(pel.TransformParentId, out var parentEl))
+                    {
+                        pel.TransformParent = (TransformElement)parentEl;
                     }
                 }
             }

@@ -19,13 +19,13 @@ namespace Test
 
             var sceneAsset = SceneReader.ReadScene(scene, meta);
             var elements = SceneReader.Flatten(sceneAsset.elements, meta);
-
             var gameObjects = elements.OfType<GameObjectElement>().ToArray();
-
+            
             Console.WriteLine("-----------------------------");
             foreach (var gameObject in gameObjects)
             {
-                var pad = new string(' ', 4 * gameObject.Depth);
+                int depth = gameObject.GetTransformDepth();
+                var pad = new string(' ', 4 * depth);
                 Console.WriteLine(pad + gameObject.name);
 
                 foreach (var component in gameObject.Components)
@@ -46,12 +46,14 @@ namespace Test
 
                             foreach (var modification in appliedModification.Modifications)
                             {
+                                if(modification.propertyPath.StartsWith("m_Local")) continue;//transform overrides
                                 Console.WriteLine(pad + "        " + modification.propertyPath + $" {modification.value??""}");
                             }
                         }
                     }
                 }
             }
+
             Console.WriteLine("-----------------------------");
         }
     }

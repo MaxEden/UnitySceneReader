@@ -6,5 +6,7 @@
         public PrefabAsset prefab;
         public Dictionary<long, List<Modification>> Modifications = new();
         public PrefabInstanceElement ParentPrefab;
+        public long TransformParentId;
+        public TransformElement TransformParent;
     }
 }

@@ -35,3 +35,4 @@ packages/
 /TestProject/UserSettings
 /TestProject/*.sln
 /TestProject/*.csproj
+/TestProject/Temp

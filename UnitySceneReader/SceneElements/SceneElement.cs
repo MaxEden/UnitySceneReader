@@ -4,6 +4,7 @@ namespace UnitySceneReader.SceneElements
 {
     public class SceneElement
     {
+        public bool stripped;
         public long Anchor;
         public YamlNode TypeName;
         public YamlMappingNode props;
@@ -13,6 +14,19 @@ namespace UnitySceneReader.SceneElements
         public int typeId;
         public int Depth;
         public List<AppliedModification> AppliedModifications;
+
+        public int GetTransformDepth()
+        {
+            int result = 0;
+            var par = gameObject.transform.Parent;
+            while (par!=null)
+            {
+                result++;
+                par = par.Parent;
+            }
+
+            return result;
+        }
     }
 
     public class AppliedModification
