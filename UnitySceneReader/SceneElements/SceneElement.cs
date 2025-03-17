@@ -4,7 +4,6 @@ namespace UnitySceneReader.SceneElements
 {
     public class SceneElement
     {
-        public long PrefabAnchor;
         public long Anchor;
         public YamlNode TypeName;
         public YamlMappingNode props;

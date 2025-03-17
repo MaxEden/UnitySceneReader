@@ -10,10 +10,10 @@ namespace UnitySceneReader
     {
         public static List<SceneElement> Flatten(List<SceneElement> elements, MetaInfo meta)
         {
-            return Flatten(0, 0, elements, meta, null);
+            return Flatten(0, elements, meta, null);
         }
 
-        public static List<SceneElement> Flatten(int depth, long prefabFileId, List<SceneElement> elements, MetaInfo meta, PrefabInstanceElement parentPrefab)
+        public static List<SceneElement> Flatten(int depth, List<SceneElement> elements, MetaInfo meta, PrefabInstanceElement parentPrefab)
         {
             var result = new List<SceneElement>();
 
@@ -27,24 +27,21 @@ namespace UnitySceneReader
                     {
                         prefabElement.Depth = depth + 1;
                     }
-                    var id = el.Anchor;
-                    if (depth > 1) id = prefabFileId ^ el.Anchor;
 
                     pel.ParentPrefab = parentPrefab;
-                    var subElements = Flatten(depth + 1, id, prefabElements, meta, pel);
+                    var subElements = Flatten(depth + 1, prefabElements, meta, pel);
                     result.AddRange(subElements);
                 }
                 else
                 {
-                    if (depth > 1) el.PrefabAnchor = (prefabFileId ^ el.Anchor);
-                    else el.PrefabAnchor = el.Anchor;
                     result.Add(el);
 
+                    var prefAnchor = el.Anchor;
                     var modPrefab = parentPrefab;
 
                     while (modPrefab != null)
                     {
-                        if (modPrefab.Modifications.TryGetValue(el.PrefabAnchor, out var mod))
+                        if (modPrefab.Modifications.TryGetValue(prefAnchor, out var mod))
                         {
                             el.AppliedModifications ??= new();
                             var applied = el.AppliedModifications.FirstOrDefault(p => p.parentPrefab == modPrefab);
@@ -61,6 +58,7 @@ namespace UnitySceneReader
                             applied.Modifications.AddRange(mod);
                         }
 
+                        prefAnchor ^= modPrefab.Anchor;
                         modPrefab = modPrefab.ParentPrefab;
                     }
                 }
