@@ -10,6 +10,6 @@ namespace UnitySceneReader.SceneElements
         public Quaternion localRotation;
         public Vector3 localPosition;
         public Vector3 localScale;
-        
+        public Vector3 localEulerAnglesHint;
     }
 }

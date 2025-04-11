@@ -216,6 +216,9 @@ namespace UnitySceneReader
 
                         var prop3 = (YamlMappingNode)el.props.Children[new YamlScalarNode("m_LocalScale")];
                         tel.localScale = Reader.ReadVector3(prop3);
+
+                        var prop4 = (YamlMappingNode)el.props.Children[new YamlScalarNode("m_LocalEulerAnglesHint")];
+                        tel.localEulerAnglesHint = Reader.ReadVector3(prop4);
                     }
                     else
                     {
